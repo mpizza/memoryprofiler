@@ -2,14 +2,26 @@
 
   (function(exports) {
     function MockMemProfiler(option) {
+      this.status = 'init';
+      this.init();
     }
 
     MockMemProfiler.prototype = {
       startProfiler: function MP_startProfiler(window) {
+        if (this.status === 'profiling') {
+          return;
+        }
+        this.status = 'profiling';
+        this.dispatchEvent('startprofiling');
         console.log('startProfiler...');
       },
 
       stopProfiler: function MP_stopProfiler(window) {
+        if (this.status === 'idle') {
+          return;
+        }
+        this.status = 'idle';
+        this.dispatchEvent('stopprofiling');
         console.log('stopProfiler...');
       },
 
@@ -31,11 +43,18 @@
         return allocatedEntries;
       },
 
+      dispatchEvent: function MP_dispatchEvent(name, detail) {
+        var evt = new CustomEvent(name, { 'detail': detail});
+        window.dispatchEvent(evt);
+      },
+
       init: function MP_init(){
+        this.status = 'idle';
         console.log('init.....');
       },
 
       stop: function MP_stop(){
+        this.status = 'init';
         console.log('stop.....');
       }
     };
