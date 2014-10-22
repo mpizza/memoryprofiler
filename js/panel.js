@@ -31,12 +31,12 @@
     showInfo: function PL_showInfo(evt) {
       // this.infoTable.textContent = 'showInfo.....';
       this.memoryResult = this.getMemoryResult();
-      this.constructTrace();
+      //this.constructTrace();
+      this.constructUsage();
       //this.render();
     },
 
     constructTrace: function PL_constructTrace() {
-      console.log('hi');
       this.memoryResult.traceTable = [];
       for (var i in this.memoryResult.stacktraceTable) {
         var trace;
@@ -49,8 +49,44 @@
           trace.push(current.nameIdx);
         }
       }
-      console.log(JSON.stringify(this.memoryResult.traceTable));
-      console.log(JSON.stringify(this.memoryResult.traceTable) + ":" + JSON.stringify(count));
+      //console.log('traceTable:' + JSON.stringify(this.memoryResult.traceTable));
+    },
+
+    constructUsage: function PL_constructUsage() {
+      var entry = null,
+          cusor = null;
+      for (var i in this.memoryResult.allocatedEntries) {
+        cusor = this.memoryResult.allocatedEntries[i];
+        entry = this.getTracesInfo(cusor.traceIdx);
+        if (entry === null) {
+          // init a entry
+          entry = {
+            traceIdx: cusor.traceIdx,
+            sizeInfo: []
+          };
+          entry.sizeInfo.push(cusor.size);
+          this.memoryResult.tracesInfo.push(entry);
+        } else {
+          // update sizeInfo
+          entry.sizeInfo.push(cusor.size);
+        }
+      }
+      // console.log('usage:' + JSON.stringify(this.memoryResult.tracesInfo));
+
+    },
+
+    getTracesInfo: function PL_getTraceInfo(id) {
+      var traceInfo = null,
+          item = null;
+      for (var i in this.memoryResult.tracesInfo) {
+        item = this.memoryResult.tracesInfo[i];
+        if (id === item.traceIdx ) {
+          traceInfo = item;
+          break;
+        }
+      }
+
+      return traceInfo;
     },
 
     render: function PL_render() {
@@ -66,7 +102,8 @@
       var memoryResult = {
         frameNameTable: this.memoryProfiler.getFrameNameTable(),
         stacktraceTable: this.memoryProfiler.getStacktraceTable(),
-        allocatedEntries: this.memoryProfiler.getAllocatedEntries()
+        allocatedEntries: this.memoryProfiler.getAllocatedEntries(),
+        tracesInfo: []
       }
 
       return memoryResult;
