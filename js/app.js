@@ -18,10 +18,11 @@ function start() {
     console.log('use real memProfiler');
   }
   var option = {
-    startRecord: 'startRecord',
-    stopRecord: 'stopRecord',
-    infoTable: 'infoTable',
-    memoryProfiler: navigator.memprofiler
+    'startRecord': 'startRecord',
+    'stopRecord': 'stopRecord',
+    'infoTable': 'infoTable',
+    'pad': 'pad',
+    'memoryProfiler': navigator.memprofiler
   }
   app.panel = new Panel(option);
   app.panel.init();
